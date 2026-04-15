@@ -1,0 +1,82 @@
+---
+import '../styles/global.css';
+import ParticleBackground from '../components/ParticleBackground.vue';
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+  canonicalURL?: string;
+}
+
+const { 
+  title, 
+  description = "Engineering Manager portfolio of Piotr Kwiatkowski. Specialized in Managing Director roles, DevOps, Cloud Infrastructure, and Agile leadership with 10+ years of experience.",
+  image = "/me.png",
+  canonicalURL = "https://www.kwiatkowskipiotr.pl"
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="generator" content={Astro.generator} />
+    
+    <!-- Primary Meta Tags -->
+    <title>{title}</title>
+    <meta name="title" content={title} />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(image, canonicalURL)} />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={canonicalURL} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={new URL(image, canonicalURL)} />
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+  </head>
+  <body class="bg-grid">
+    <ParticleBackground client:load />
+    <nav class="glass-nav py-4 px-6 md:px-12 flex justify-between items-center">
+      <div class="flex items-center gap-2">
+        <img src="/favicon.png" alt="PK Logo" class="h-8 w-8 grayscale brightness-200" />
+        <span class="font-space-grotesk font-bold tracking-tighter text-lg uppercase">Piotr Kwiatkowski</span>
+      </div>
+      <div class="hidden md:flex gap-8 text-[11px] uppercase tracking-widest font-space-grotesk text-outline-variant">
+        <a href="#experience" class="hover:text-primary transition-colors">Experience</a>
+        <a href="#achievements" class="hover:text-primary transition-colors">Achievements</a>
+        <a href="#skills" class="hover:text-primary transition-colors">Skills</a>
+        <a href="#education" class="hover:text-primary transition-colors">Education</a>
+      </div>
+    </nav>
+    <main class="pt-24 md:pt-32">
+      <slot />
+    </main>
+    <footer class="bg-surface-container-low py-12 px-6 md:px-12 mt-24">
+      <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+        <div class="text-[10px] uppercase tracking-[0.2em] text-outline-variant">
+          &copy; 2026 Piotr Kwiatkowski // EM Dashboard v1.0
+        </div>
+        <div class="flex gap-8 text-[11px] uppercase tracking-widest font-space-grotesk">
+          <a href="https://linkedin.com/in/piotrkwiatkowski84" class="hover:text-primary transition-colors">LinkedIn</a>
+          <a href="mailto:pkwiatek@gmail.com" class="hover:text-primary transition-colors">Email</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
