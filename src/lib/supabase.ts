@@ -7,4 +7,8 @@ if (!supabaseUrl || !supabaseAnonKey) {
   console.warn('Supabase credentials missing. Visitor tracking may not work.');
 }
 
-export const supabase = createClient(supabaseUrl || '', supabaseAnonKey || '');
+// Ensure the URL is a valid string before creating the client to prevent runtime crashes
+const safeUrl = supabaseUrl && supabaseUrl.startsWith('http') ? supabaseUrl : 'https://example.supabase.co';
+const safeKey = supabaseAnonKey || 'missing-key';
+
+export const supabase = createClient(safeUrl, safeKey);

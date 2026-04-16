@@ -127,11 +127,14 @@ import { supabase } from '../lib/supabase';
     const authError = document.getElementById('auth-error');
 
     authBtn?.addEventListener('click', () => {
+      console.log('Authentication attempt...');
       if (accessInput.value === ADMIN_CODE) {
+        console.log('Access granted');
         authLayer?.classList.add('hidden');
         dashboardContent?.classList.remove('hidden');
         fetchLogs();
       } else {
+        console.warn('Invalid code entered');
         authError?.classList.remove('hidden');
         accessInput.value = '';
         accessInput.focus();
