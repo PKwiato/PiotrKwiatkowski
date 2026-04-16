@@ -126,6 +126,10 @@ import { supabase } from '../lib/supabase';
     const authBtn = document.getElementById('auth-btn');
     const authError = document.getElementById('auth-error');
 
+    console.log('--- System Diagnostics ---');
+    console.log('Admin Code Configured:', ADMIN_CODE ? 'YES' : 'NO');
+    if (!ADMIN_CODE) console.error('Error: PUBLIC_ADMIN_CODE is missing at build time!');
+
     authBtn?.addEventListener('click', () => {
       console.log('Authentication attempt...');
       if (accessInput.value === ADMIN_CODE) {

@@ -88,13 +88,20 @@ const {
 
       async function trackVisit() {
         try {
-          // Get general location (Privacy-first)
-          const locResponse = await fetch('https://ipapi.co/json/');
-          const locData = await locResponse.json();
-          const location = {
-            country: locData.country_name || 'Unknown',
-            city: locData.city || 'Unknown'
-          };
+          // Get general location (Fallback to public API)
+          let location = { country: 'Unknown', city: 'Unknown' };
+          try {
+            const locResponse = await fetch('https://freeipapi.com/api/json');
+            if (locResponse.ok) {
+              const locData = await locResponse.json();
+              location = {
+                country: locData.countryName || 'Unknown',
+                city: locData.cityName || 'Unknown'
+              };
+            }
+          } catch (e) {
+            console.warn('Location lookup failed, using defaults');
+          }
 
           const { error } = await supabase
             .from('visits')
@@ -105,9 +112,9 @@ const {
               location: location
             });
           
-          if (error) console.error('Tracking error:', error);
+          if (error) console.error('Supabase tracking error:', error);
         } catch (e) {
-          console.error('Tracking failed:', e);
+          console.error('Global tracking failure:', e);
         }
       }
 
