@@ -91,16 +91,17 @@ const {
           // Get general location (Fallback to public API)
           let location = { country: 'Unknown', city: 'Unknown' };
           try {
-            const locResponse = await fetch('https://freeipapi.com/api/json');
+            // Using ipapi.co as it has better CORS support for client-side fetching
+            const locResponse = await fetch('https://ipapi.co/json/');
             if (locResponse.ok) {
               const locData = await locResponse.json();
               location = {
-                country: locData.countryName || 'Unknown',
-                city: locData.cityName || 'Unknown'
+                country: locData.country_name || 'Unknown',
+                city: locData.city || 'Unknown'
               };
             }
           } catch (e) {
-            console.warn('Location lookup failed, using defaults');
+            // Silence expected network/CORS issues to avoid cluttering diagnostics
           }
 
           const { error } = await supabase
@@ -112,9 +113,11 @@ const {
               location: location
             });
           
-          if (error) console.error('Supabase tracking error:', error);
+          if (error && error.code !== '401') {
+            console.warn('Supabase tracking inhibited:', error.message);
+          }
         } catch (e) {
-          console.error('Global tracking failure:', e);
+          // Global tracking failure should not impact user experience
         }
       }
 

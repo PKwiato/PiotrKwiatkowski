@@ -150,19 +150,33 @@ import { supabase } from '../lib/supabase';
     });
 
     async function fetchLogs() {
-      const { data, error } = await supabase
-        .from('visits')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(50);
+      try {
+        const { data, error } = await supabase
+          .from('visits')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(50);
 
-      if (error) {
-        console.error('Fetch error:', error);
-        return;
+        if (error) {
+          console.error('Fetch error:', error);
+          const container = document.getElementById('visit-logs');
+          if (container) {
+            container.innerHTML = `
+              <tr>
+                <td colspan="5" class="p-12 text-center text-xs uppercase tracking-widest text-red-500/60 font-bold italic">
+                  Data Stream Interrupted: ${error.message} (Code: ${error.code})
+                </td>
+              </tr>
+            `;
+          }
+          return;
+        }
+
+        renderLogs(data);
+        updateStats(data);
+      } catch (err) {
+        console.error('Fatal fetch error:', err);
       }
-
-      renderLogs(data);
-      updateStats(data);
     }
 
     function renderLogs(logs) {
