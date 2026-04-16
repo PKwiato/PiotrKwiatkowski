@@ -161,10 +161,15 @@ import { supabase } from '../lib/supabase';
           console.error('Fetch error:', error);
           const container = document.getElementById('visit-logs');
           if (container) {
+            const isRLSError = error.message.toLowerCase().includes('policy') || error.code === '42501';
+            const errorMessage = isRLSError 
+              ? `${error.message}. <br/><span class="text-primary/80">FIX: Run the RLS policy SQL in your Supabase Editor.</span>`
+              : `${error.message} (Code: ${error.code})`;
+
             container.innerHTML = `
               <tr>
                 <td colspan="5" class="p-12 text-center text-xs uppercase tracking-widest text-red-500/60 font-bold italic">
-                  Data Stream Interrupted: ${error.message} (Code: ${error.code})
+                  Data Stream Interrupted: ${errorMessage}
                 </td>
               </tr>
             `;
