@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /mx-log-x71
 
 Sitemap: https://www.kwiatkowskipiotr.pl/sitemap-index.xml

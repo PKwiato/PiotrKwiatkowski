@@ -1,0 +1,210 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { supabase } from '../lib/supabase';
+
+// Fetch initial data (server-side for first load if building, but on client-side it will be dynamic)
+// Since it's a static site, we will handle the fetch in a client-side script for real-time data.
+---
+
+<BaseLayout 
+  title="MX-LOG-X71 // System Intake" 
+  description="Unauthorized access prohibited. System monitoring active."
+>
+  <meta name="robots" content="noindex, nofollow" slot="head" />
+  <div id="auth-layer" class="fixed inset-0 z-[100] bg-surface flex items-center justify-center p-6">
+    <div class="max-w-md w-full border border-primary/20 p-8 bg-surface-container-low">
+      <div class="mb-6">
+        <span class="text-[10px] uppercase tracking-[0.4em] text-primary">Security Protocol 402</span>
+        <h2 class="text-3xl font-newsreader italic mt-2">Access Required</h2>
+      </div>
+      <div class="space-y-4">
+        <label class="block text-[9px] uppercase tracking-widest text-white/40">Credential Input</label>
+        <input 
+          type="password" 
+          id="access-code" 
+          class="w-full bg-white/5 border border-outline-variant/30 px-4 py-3 font-mono text-sm focus:border-primary outline-none transition-colors"
+          placeholder="ENTER CODE..."
+        />
+        <button 
+          id="auth-btn" 
+          class="w-full bg-primary text-on-primary font-space-grotesk text-[11px] font-bold py-3 uppercase tracking-[0.2em] hover:bg-primary-container transition-colors"
+        >
+          Authenticate
+        </button>
+        <div id="auth-error" class="hidden text-red-500 text-[10px] uppercase tracking-widest text-center mt-2 italic">Invalid Authorization Token</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="dashboard-content" class="hidden px-6 md:px-12 py-12 min-h-screen font-space-grotesk text-white">
+    <div class="max-w-7xl mx-auto">
+      <!-- Header -->
+      <div class="mb-12 border-b border-primary/20 pb-8 flex flex-col md:flex-row justify-between items-end gap-6">
+        <div>
+          <span class="text-[10px] uppercase tracking-[0.4em] text-primary">System Monitoring</span>
+          <h1 class="text-5xl md:text-7xl font-newsreader italic -tracking-wider mt-2">mx-log-x71</h1>
+        </div>
+        <div class="flex flex-col items-end">
+          <span id="system-time" class="text-[11px] font-bold text-outline-variant">SYNCING TIME...</span>
+          <span class="text-[8px] uppercase tracking-[0.2em] text-white/40">Status: Terminal Active</span>
+        </div>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-1 px-px bg-primary/10 mb-20 border border-primary/20">
+        <div class="bg-surface p-8">
+          <span class="text-[10px] uppercase tracking-widest text-primary/60 block mb-2">Total Intakes</span>
+          <div id="stat-total" class="text-4xl font-newsreader italic">000</div>
+        </div>
+        <div class="bg-surface p-8">
+          <span class="text-[10px] uppercase tracking-widest text-primary/60 block mb-2">Unique Nodes</span>
+          <div id="stat-unique" class="text-4xl font-newsreader italic">000</div>
+        </div>
+        <div class="bg-surface p-8">
+          <span class="text-[10px] uppercase tracking-widest text-primary/60 block mb-2">System Integrity</span>
+          <div class="text-4xl font-newsreader italic text-green-500/80">99.8%</div>
+        </div>
+      </div>
+
+      <!-- Log Table -->
+      <div class="relative overflow-x-auto border border-outline-variant/20 bg-surface-container-low">
+        <div class="p-6 border-b border-outline-variant/10 flex justify-between items-center bg-surface-container">
+          <span class="text-[10px] uppercase tracking-[0.3em] font-bold italic text-white/80">Access History Repository</span>
+          <button id="refresh-btn" class="text-[10px] uppercase tracking-widest bg-white/5 hover:bg-white/10 px-4 py-2 transition-colors border border-outline-variant/20">Refresh Terminal</button>
+        </div>
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="text-[9px] uppercase tracking-widest text-primary/50 border-b border-outline-variant/10">
+              <th class="p-6 font-medium">Timestamp</th>
+              <th class="p-6 font-medium">Coordinate (Path)</th>
+              <th class="p-6 font-medium">Origin (Location)</th>
+              <th class="p-6 font-medium">Ident (User Agent)</th>
+              <th class="p-6 font-medium">Referrer</th>
+            </tr>
+          </thead>
+          <tbody id="visit-logs">
+            <!-- Row Template -->
+            <tr class="border-b border-outline-variant/5 animate-pulse">
+              <td colspan="5" class="p-12 text-center text-xs uppercase tracking-widest text-white/20">Awaiting data stream...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    :root {
+      --primary: #ff8f73;
+    }
+    .text-outline-variant { color: #494847; }
+    .bg-surface { background: #0e0e0e; }
+    .bg-surface-container-low { background: #131313; }
+    .bg-surface-container { background: #1a1919; }
+
+    /* Custom scrollbar for matrix feel */
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0e0e0e;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #ff8f73;
+    }
+  </style>
+
+  <script>
+    import { supabase } from '../lib/supabase';
+
+    const ADMIN_CODE = import.meta.env.PUBLIC_ADMIN_CODE;
+
+    // Auth Logic
+    const authLayer = document.getElementById('auth-layer');
+    const dashboardContent = document.getElementById('dashboard-content');
+    const accessInput = document.getElementById('access-code') as HTMLInputElement;
+    const authBtn = document.getElementById('auth-btn');
+    const authError = document.getElementById('auth-error');
+
+    authBtn?.addEventListener('click', () => {
+      if (accessInput.value === ADMIN_CODE) {
+        authLayer?.classList.add('hidden');
+        dashboardContent?.classList.remove('hidden');
+        fetchLogs();
+      } else {
+        authError?.classList.remove('hidden');
+        accessInput.value = '';
+        accessInput.focus();
+      }
+    });
+
+    accessInput?.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') authBtn?.click();
+    });
+
+    async function fetchLogs() {
+      const { data, error } = await supabase
+        .from('visits')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+      if (error) {
+        console.error('Fetch error:', error);
+        return;
+      }
+
+      renderLogs(data);
+      updateStats(data);
+    }
+
+    function renderLogs(logs) {
+      const container = document.getElementById('visit-logs');
+      if (!container) return;
+
+      if (!logs || logs.length === 0) {
+        container.innerHTML = `
+          <tr>
+            <td colspan="5" class="p-12 text-center text-xs uppercase tracking-widest text-white/40">No records found.</td>
+          </tr>
+        `;
+        return;
+      }
+
+      container.innerHTML = logs.map(log => `
+        <tr class="text-[11px] hover:bg-white/5 transition-colors border-b border-outline-variant/10 group">
+          <td class="p-6 text-primary font-mono">${new Date(log.created_at).toLocaleString()}</td>
+          <td class="p-6 font-mono tracking-tighter text-white/90">${log.path}</td>
+          <td class="p-6">
+            <span class="bg-white/5 px-2 py-1 text-[9px] uppercase tracking-widest border border-white/10">
+              ${log.location?.city || '???'}, ${log.location?.country || '??'}
+            </span>
+          </td>
+          <td class="p-6 text-white/40 font-mono text-[9px] truncate max-w-[200px]" title="${log.user_agent}">
+            ${log.user_agent}
+          </td>
+          <td class="p-6 text-white/60">${log.referrer}</td>
+        </tr>
+      `).join('');
+    }
+
+    function updateStats(logs) {
+      document.getElementById('stat-total').innerText = logs.length.toString().padStart(3, '0');
+      const unique = new Set(logs.map(l => l.referrer)).size;
+      document.getElementById('stat-unique').innerText = unique.toString().padStart(3, '0');
+    }
+
+    // System Time
+    function updateTime() {
+      const el = document.getElementById('system-time');
+      if (el) el.innerText = new Date().toISOString().replace('T', ' ').substring(0, 19);
+    }
+
+    document.getElementById('refresh-btn')?.addEventListener('click', () => {
+      fetchLogs();
+    });
+
+    setInterval(updateTime, 1000);
+    fetchLogs();
+  </script>
+</BaseLayout>

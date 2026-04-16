@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import ParticleBackground from '../components/ParticleBackground.vue';
+import { supabase } from '../lib/supabase';
 
 interface Props {
   title: string;
@@ -78,5 +79,38 @@ const {
         </div>
       </div>
     </footer>
+
+    <!-- Visitor Tracking Script -->
+    <script>
+      import { supabase } from '../lib/supabase';
+
+      async function trackVisit() {
+        try {
+          // Get general location (Privacy-first)
+          const locResponse = await fetch('https://ipapi.co/json/');
+          const locData = await locResponse.json();
+          const location = {
+            country: locData.country_name || 'Unknown',
+            city: locData.city || 'Unknown'
+          };
+
+          const { error } = await supabase
+            .from('visits')
+            .insert({
+              path: window.location.pathname,
+              referrer: document.referrer || 'Direct',
+              user_agent: navigator.userAgent,
+              location: location
+            });
+          
+          if (error) console.error('Tracking error:', error);
+        } catch (e) {
+          console.error('Tracking failed:', e);
+        }
+      }
+
+      // Track on load
+      trackVisit();
+    </script>
   </body>
 </html>
