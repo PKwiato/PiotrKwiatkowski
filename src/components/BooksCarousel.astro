@@ -44,7 +44,7 @@ const inProgressCount = totalBooks - finishedCount;
           Reading<br/>Vault
         </h2>
         <p class="font-space-grotesk text-white/60 text-sm md:text-base max-w-xl mt-3">
-          Kolekcja książek i audiobooków przeczytanych w Storytel. Dane, okładki i statystyki pobrane bezpośrednio przez API Storytel na podstawie historii konta.
+          Curated collection of books and audiobooks from my Storytel account. Covers, ratings, and stats synced directly via the Storytel API.
         </p>
       </div>
 
@@ -53,25 +53,25 @@ const inProgressCount = totalBooks - finishedCount;
         <!-- Filter Tabs -->
         <div class="flex flex-wrap gap-2" id="books-filter-group">
           <button 
-            type="button"
+            type="button" 
             class="filter-btn active px-4 py-2 text-[10px] uppercase tracking-widest font-space-grotesk border border-primary bg-primary text-on-primary font-bold transition-all"
             data-filter="all"
           >
-            Wszystkie ({totalBooks})
+            All ({totalBooks})
           </button>
           <button 
-            type="button"
+            type="button" 
             class="filter-btn px-4 py-2 text-[10px] uppercase tracking-widest font-space-grotesk border border-outline-variant/30 text-white/70 hover:border-primary/50 hover:text-white transition-all"
             data-filter="finished"
           >
-            Ukończone ({finishedCount})
+            Completed ({finishedCount})
           </button>
           <button 
-            type="button"
+            type="button" 
             class="filter-btn px-4 py-2 text-[10px] uppercase tracking-widest font-space-grotesk border border-outline-variant/30 text-white/70 hover:border-primary/50 hover:text-white transition-all"
             data-filter="progress"
           >
-            W trakcie ({inProgressCount})
+            In Progress ({inProgressCount})
           </button>
         </div>
 
@@ -84,7 +84,7 @@ const inProgressCount = totalBooks - finishedCount;
           <button 
             id="carousel-prev" 
             type="button" 
-            aria-label="Poprzednia książka"
+            aria-label="Previous book"
             class="w-10 h-10 border border-outline-variant/30 bg-surface-container flex items-center justify-center text-white hover:border-primary hover:text-primary transition-all disabled:opacity-30 disabled:pointer-events-none active:scale-95"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -95,7 +95,7 @@ const inProgressCount = totalBooks - finishedCount;
           <button 
             id="carousel-next" 
             type="button" 
-            aria-label="Następna książka"
+            aria-label="Next book"
             class="w-10 h-10 border border-outline-variant/30 bg-surface-container flex items-center justify-center text-white hover:border-primary hover:text-primary transition-all disabled:opacity-30 disabled:pointer-events-none active:scale-95"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -111,7 +111,7 @@ const inProgressCount = totalBooks - finishedCount;
       id="books-carousel-track" 
       class="flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory py-4 no-scrollbar cursor-grab active:cursor-grabbing"
       tabindex="0"
-      aria-label="Karuzela książek ze Storytel"
+      aria-label="Storytel reading archive carousel"
     >
       {books.map((book, index) => (
         <article 
@@ -125,7 +125,7 @@ const inProgressCount = totalBooks - finishedCount;
               {book.cover ? (
                 <img 
                   src={book.cover} 
-                  alt={`Okładka ${book.title}`}
+                  alt={`Cover for ${book.title}`}
                   loading="lazy"
                   decoding="async"
                   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -152,7 +152,7 @@ const inProgressCount = totalBooks - finishedCount;
             <div class="mb-3">
               <div class="flex justify-between items-center text-[10px] font-space-grotesk mb-1.5">
                 <span class={book.isFinished ? "text-primary uppercase tracking-widest font-semibold" : "text-white/60 uppercase tracking-widest"}>
-                  {book.isFinished ? "Przeczytana (100%)" : `W trakcie (${book.progress}%)`}
+                  {book.isFinished ? "Completed (100%)" : `In Progress (${book.progress}%)`}
                 </span>
                 {book.duration && (
                   <span class="text-white/40">{book.duration}</span>
@@ -192,7 +192,7 @@ const inProgressCount = totalBooks - finishedCount;
                 class="open-modal-btn text-[10px] uppercase tracking-wider text-white/70 hover:text-primary transition-colors cursor-pointer"
                 data-book={JSON.stringify(book)}
               >
-                Opis & Info
+                Overview
               </button>
               {book.shareUrl && (
                 <a 
@@ -200,7 +200,7 @@ const inProgressCount = totalBooks - finishedCount;
                   target="_blank" 
                   rel="noopener noreferrer" 
                   class="text-outline-variant hover:text-primary transition-colors inline-flex items-center p-1"
-                  title="Otwórz w Storytel"
+                  title="Open on Storytel"
                 >
                   <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -229,7 +229,7 @@ const inProgressCount = totalBooks - finishedCount;
         id="close-modal" 
         type="button"
         class="absolute top-4 right-4 w-8 h-8 border border-outline-variant/30 flex items-center justify-center text-white/70 hover:text-primary hover:border-primary transition-colors"
-        aria-label="Zamknij"
+        aria-label="Close"
       >
         ✕
       </button>
@@ -251,25 +251,25 @@ const inProgressCount = totalBooks - finishedCount;
 
           <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 py-3 border-y border-outline-variant/20 text-[10px] font-space-grotesk">
             <div>
-              <span class="text-white/40 block">POSTĘP:</span>
+              <span class="text-white/40 block">PROGRESS:</span>
               <span id="modal-progress" class="text-primary font-bold"></span>
             </div>
             <div>
-              <span class="text-white/40 block">CZAS TRWANIA:</span>
+              <span class="text-white/40 block">DURATION:</span>
               <span id="modal-duration" class="text-white"></span>
             </div>
             <div>
-              <span class="text-white/40 block">OCENA STORYTEL:</span>
+              <span class="text-white/40 block">STORYTEL RATING:</span>
               <span id="modal-rating" class="text-white"></span>
             </div>
             <div id="modal-narrator-box" class="sm:col-span-3">
-              <span class="text-white/40 block">LEKTOR:</span>
+              <span class="text-white/40 block">NARRATOR:</span>
               <span id="modal-narrator" class="text-white"></span>
             </div>
           </div>
 
           <div>
-            <h4 class="text-xs uppercase tracking-widest font-space-grotesk text-white/40 mb-2">Opis</h4>
+            <h4 class="text-xs uppercase tracking-widest font-space-grotesk text-white/40 mb-2">Synopsis</h4>
             <div id="modal-desc" class="font-space-grotesk text-xs md:text-sm text-white/80 leading-relaxed max-h-48 overflow-y-auto pr-2 space-y-2 whitespace-pre-line"></div>
           </div>
 
@@ -281,7 +281,7 @@ const inProgressCount = totalBooks - finishedCount;
               rel="noopener noreferrer" 
               class="btn-primary text-xs w-full text-center"
             >
-              Otwórz w Storytel
+              Open on Storytel
             </a>
           </div>
         </div>
@@ -447,7 +447,7 @@ const inProgressCount = totalBooks - finishedCount;
         if (modalTitle) modalTitle.textContent = bookData.title || '';
         if (modalAuthor) modalAuthor.textContent = bookData.author || '';
         if (modalFormat) modalFormat.textContent = bookData.format || 'AUDIOBOOK';
-        if (modalProgress) modalProgress.textContent = bookData.isFinished ? '100% (Ukończona)' : `${bookData.progress}%`;
+        if (modalProgress) modalProgress.textContent = bookData.isFinished ? '100% (Completed)' : `${bookData.progress}%`;
         if (modalDuration) modalDuration.textContent = bookData.duration || '—';
         if (modalRating) modalRating.textContent = bookData.rating ? `★ ${bookData.rating.toFixed(2)}` : '—';
         
@@ -461,7 +461,7 @@ const inProgressCount = totalBooks - finishedCount;
         }
 
         if (modalDesc) {
-          modalDesc.textContent = bookData.description || 'Brak opisu w bazie Storytel.';
+          modalDesc.textContent = bookData.description || 'No synopsis available in the Storytel catalog.';
         }
 
         if (modalLink) {
