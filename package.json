@@ -9,7 +9,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "fetch-books": "node scripts/fetch-storytel.mjs"
   },
   "dependencies": {
     "@astrojs/vue": "^6.0.1",
